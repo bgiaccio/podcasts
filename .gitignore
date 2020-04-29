@@ -1,0 +1,6 @@
+/venv/
+/.idea/
+/dist/
+/build/
+/podcast_server_bgiaccio.egg-info/
+*/__pycache__/
