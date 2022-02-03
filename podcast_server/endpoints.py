@@ -41,7 +41,7 @@ def feed(feedName):
 
 @app.route('/<path:filename>', methods=['GET', 'HEAD'])
 def download(filename):
-    return send_from_directory(directory=podcast_service.search_dir, filename=html.unescape(filename).replace('+', ' '))
+    return send_from_directory(directory=podcast_service.search_dir, path=html.unescape(filename).replace('+', ' '))
 
 
 if __name__ == "__main__":
