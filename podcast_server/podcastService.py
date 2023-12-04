@@ -31,6 +31,10 @@ class PodcastService:
         if feed_metadata.exists():
             with open(feed_metadata, encoding="utf-8") as feed_metadata_file:
                 metadata = json.load(feed_metadata_file)
+                if authors := metadata['authors']:
+                    metadata['authors'] = []
+                    for p in authors:
+                        metadata['authors'].append(Person(p))
                 p = Podcast(**metadata)
         else:
             # Initialize the feed
@@ -58,7 +62,7 @@ class PodcastService:
                 # Too many fields in Podcast so just write a subset
                 data = dict(
                     name=p.name, description=p.description, website=p.website, complete=p.complete, language=p.language,
-                    feed_url=p.feed.url, explicit=p.explicit, authors=p.authors, image=p.image
+                    feed_url=p.feed_url, explicit=p.explicit, authors=p.authors, image=p.image
                 )
                 json.dump(data, outFile, indent=2, default=str)
 
