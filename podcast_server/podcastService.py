@@ -48,8 +48,19 @@ class PodcastService:
             p.explicit = False
             p.authors.append(Person("Anthology"))
 
+            for ext in ['.jpg', '.png']:
+                image_file_name = feed_dir.joinpath(f'{feed_name}.{ext}')
+                if image_file_name.is_file():
+                    p.image = f'{p.website}/{image_file_name.lstrip(self.search_dir)}'.replace(' ', '+')
+                    break
+
             with open(feed_metadata, 'w', encoding='utf-8') as outFile:
-                json.dump(vars(p), outFile, indent=2, default=str)
+                # Too many fields in Podcast so just write a subset
+                data = dict(
+                    name=p.name, description=p.description, website=p.website, complete=p.complete, language=p.language,
+                    feed_url=p.feed.url, explicit=p.explicit, authors=p.authors, image=p.image
+                )
+                json.dump(data, outFile, indent=2, default=str)
 
         for path in feed_dir.glob('**/*.mp3'):
             filepath = str(path)
