@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="podcast_server-bgiaccio",
-    version="0.0.2",
+    version="0.0.3",
     install_requires = ['Flask', 'podgen'],
     author="Brad Giaccio",
     author_email="brad.giaccio+podcast_server@gmail.com",

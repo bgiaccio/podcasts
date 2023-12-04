@@ -26,23 +26,32 @@ class PodcastService:
         :param feed_name: name of the feed and the sub-directory for files
         :return:  string of the podcast
         """
-        # Initialize the feed
-        p = Podcast()
+        feed_dir = Path(self.search_dir).joinpath(feed_name)
+        feed_metadata = feed_dir.joinpath("metadata.json")
+        if feed_metadata.exists():
+            with open(feed_metadata, encoding="utf-8") as feed_metadata_file:
+                metadata = json.load(feed_metadata_file)
+                p = Podcast(**metadata)
+        else:
+            # Initialize the feed
+            p = Podcast()
 
-        # Required fields
-        p.name = f'{feed_name} Archive'
-        p.description = 'Stuff to listen to later'
-        p.website = self.base_url
-        p.complete = False
+            # Required fields
+            p.name = f'{feed_name} Archive'
+            p.description = 'Stuff to listen to later'
+            p.website = self.base_url
+            p.complete = False
 
-        # Optional
-        p.language = 'en-US'
-        p.feed_url = f'{p.website}/feeds/{feed_name}/rss'
-        p.explicit = False
-        p.authors.append(Person("Anthology"))
+            # Optional
+            p.language = 'en-US'
+            p.feed_url = f'{p.website}/feeds/{feed_name}/rss'
+            p.explicit = False
+            p.authors.append(Person("Anthology"))
 
-        # for filepath in glob.iglob(f'{self.search_dir}/{feed_name}/*.mp3'):
-        for path in Path(f'{self.search_dir}/{feed_name}').glob('**/*.mp3'):
+            with open(feed_metadata, 'w', encoding='utf-8') as outFile:
+                json.dump(vars(p), outFile, indent=2, default=str)
+
+        for path in feed_dir.glob('**/*.mp3'):
             filepath = str(path)
             episode = p.add_episode()
 
@@ -85,9 +94,10 @@ class PodcastService:
                     'title': episode.title,
                     'summary': episode.summary,
                     'publication_date': episode.publication_date,
-                    'authors': episode.authors
+                    'authors': episode.authors,
+                    'image': episode.image
                 }
-                with open(metadata_file_name, 'w') as outFile:
+                with open(metadata_file_name, 'w', encoding='utf-8') as outFile:
                     json.dump(metadata, outFile, indent=2, default=str)
 
         return p.rss_str()
